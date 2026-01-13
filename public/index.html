@@ -294,7 +294,7 @@
             document.getElementById('userInput').focus();
         }
 
-        function showLoading(show = true) {
+        function showAllLoading(show = true) {
             const buttons = document.querySelectorAll('button');
             buttons.forEach(btn => {
                 if (show) {
@@ -312,6 +312,23 @@
                     }
                 }
             });
+        }
+
+        function showButtonLoading(button, show = true) {
+            if (show) {
+                button.disabled = true;
+                if (!button.querySelector('.loading')) {
+                    const loading = document.createElement('span');
+                    loading.className = 'loading';
+                    button.insertBefore(loading, button.firstChild);
+                }
+            } else {
+                button.disabled = false;
+                const loading = button.querySelector('.loading');
+                if (loading) {
+                    loading.remove();
+                }
+            }
         }
 
         function showResponse(data) {
@@ -402,7 +419,8 @@
                 return;
             }
 
-            showLoading(true);
+            const button = event.currentTarget;
+            showButtonLoading(button, true);
 
             try {
                 const response = await fetch(`${API_URL}/chat`, {
@@ -423,7 +441,7 @@
             } catch (error) {
                 showError(error);
             } finally {
-                showLoading(false);
+                showButtonLoading(button, false);
             }
         }
 
@@ -434,7 +452,8 @@
                 return;
             }
 
-            showLoading(true);
+            const button = event.currentTarget;
+            showButtonLoading(button, true);
 
             try {
                 const response = await fetch(`${API_URL}/chat`, {
@@ -455,7 +474,7 @@
             } catch (error) {
                 showError(error);
             } finally {
-                showLoading(false);
+                showButtonLoading(button, false);
             }
         }
 
@@ -466,7 +485,8 @@
                 return;
             }
 
-            showLoading(true);
+            const button = event.currentTarget;
+            showButtonLoading(button, true);
 
             try {
                 const response = await fetch(`${API_URL}/chat`, {
@@ -487,7 +507,7 @@
             } catch (error) {
                 showError(error);
             } finally {
-                showLoading(false);
+                showButtonLoading(button, false);
             }
         }
 
@@ -498,7 +518,8 @@
                 return;
             }
 
-            showLoading(true);
+            const button = event.currentTarget;
+            showButtonLoading(button, true);
 
             try {
                 const response = await fetch(`${API_URL}/generate-image`, {
@@ -523,7 +544,7 @@
             } catch (error) {
                 showError(error);
             } finally {
-                showLoading(false);
+                showButtonLoading(button, false);
             }
         }
 
@@ -534,7 +555,8 @@
                 return;
             }
 
-            showLoading(true);
+            const button = event.currentTarget;
+            showButtonLoading(button, true);
 
             try {
                 const response = await fetch(`${API_URL}/text-to-speech`, {
@@ -569,7 +591,7 @@
             } catch (error) {
                 showError(error);
             } finally {
-                showLoading(false);
+                showButtonLoading(button, false);
             }
         }
 
