@@ -321,13 +321,54 @@
             const toolInfo = document.getElementById('toolInfo');
 
             responseSection.classList.add('active');
-            responseContent.textContent = data.response || '请求完成';
+
+            // 处理响应文本，渲染 Markdown 和图片链接
+            let displayContent = data.response || '请求完成';
+
+            // 检查是否有图片 URL
+            let imageUrl = data.imageUrl;
+
+            // 如果没有直接的 imageUrl 字段，尝试从响应文本中提取图片链接
+            if (!imageUrl && displayContent) {
+                // 匹配 Markdown 图片格式 ![alt](url)
+                const markdownImageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+                const matches = [...displayContent.matchAll(markdownImageRegex)];
+
+                if (matches.length > 0) {
+                    // 提取第一个图片 URL
+                    imageUrl = matches[0][2];
+                    // 移除 Markdown 图片标记，让图片单独显示
+                    displayContent = displayContent.replace(markdownImageRegex, '');
+                }
+
+                // 也匹配直接的 http/https 图片链接
+                const httpImageRegex = /https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp)/gi;
+                const httpMatches = displayContent.match(httpImageRegex);
+                if (httpMatches && !imageUrl) {
+                    imageUrl = httpMatches[0];
+                    displayContent = displayContent.replace(httpImageRegex, '');
+                }
+
+                // 匹配 Pollinations AI 图片链接
+                const pollinationsRegex = /https:\/\/image\.pollinations\.ai\/prompt\/[^\s]*/gi;
+                const pollinationsMatches = displayContent.match(pollinationsRegex);
+                if (pollinationsMatches && !imageUrl) {
+                    imageUrl = pollinationsMatches[0];
+                    displayContent = displayContent.replace(pollinationsRegex, '');
+                }
+            }
+
+            // 显示处理后的文本内容
+            responseContent.innerHTML = displayContent;
 
             // 显示图片（如果有）
-            if (data.imageUrl) {
+            if (imageUrl) {
                 imageResult.innerHTML = `
                     <p>📸 生成的图片：</p>
-                    <img src="${data.imageUrl}" alt="生成的图片" />
+                    <img src="${imageUrl}" alt="生成的图片" style="max-width: 100%; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);" />
+                    <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                        图片链接: <a href="${imageUrl}" target="_blank" style="color: #667eea;">${imageUrl}</a>
+                    </p>
                 `;
             } else {
                 imageResult.innerHTML = '';
