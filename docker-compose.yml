@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  ai-agent:
+    build: .
+    container_name: ai-weather-agent
+    ports:
+      - "3000:3000"
+    environment:
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY}
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
+      - PORT=3000
+      - NODE_ENV=production
+    volumes:
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
